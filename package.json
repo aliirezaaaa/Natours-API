@@ -1,0 +1,23 @@
+{
+  "name": "natours",
+  "version": "1.0.0",
+  "description": "Learning node, express and mongoDB",
+  "homepage": "https://github.com/aliirezaaaa/Natours-API#readme",
+  "bugs": {
+    "url": "https://github.com/aliirezaaaa/Natours-API/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aliirezaaaa/Natours-API.git"
+  },
+  "license": "ISC",
+  "author": "Alireza",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}
