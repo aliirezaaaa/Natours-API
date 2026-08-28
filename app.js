@@ -94,16 +94,17 @@ const deleteUser = (req, res) => {
   });
 };
 
-app.get('/api/v1/tours', getAllTours);
-app.get('/api/v1/tours/:id', getTourById);
-app.post('/api/v1/tours', createTour);
+//Mounting the router
+const toureRouter = express.Router();
+const userRouter = express.Router();
+app.use('/api/v1/tours', toureRouter);
+app.use('/api/v1/users', userRouter);
 
-app.route('api/v1/users').get(getAllUsers).post(createUser);
-app
-  .route('api/v1/users/:id')
-  .get(getUserById)
-  .patch(updateUser)
-  .delete(deleteUser);
+toureRouter.route('/').get(getAllTours).post(createTour);
+toureRouter.route('/id').get(getTourById);
+
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUserById).patch(updateUser).delete(deleteUser);
 
 const port = 3000;
 
