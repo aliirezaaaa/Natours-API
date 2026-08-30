@@ -4,6 +4,19 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
+//Param Middleware
+exports.checkID = (req, res, next, val) => {
+  console.log(`Tour id is ${val}`);
+
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid tour ID!',
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     reuestedAt: req.requestTime,
@@ -16,13 +29,6 @@ exports.getAllTours = (req, res) => {
 exports.getTourById = (req, res) => {
   const { id } = req.params;
   const tour = tours.find((el) => el.id === +id);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid tour ID!',
-    });
-  }
 
   res.status(200).json({
     status: 'success',
