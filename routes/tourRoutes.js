@@ -10,6 +10,7 @@ router
 router
   .route('/:id')
   .get(tourController.getTourById)
-  .patch(tourController.updateTour);
+  .patch(tourController.updateTour)
+  .delete(tourController.deleteTour);
 
 module.exports = router;
