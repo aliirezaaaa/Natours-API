@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -60,10 +62,18 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 );
+
 //virtual properties does not save into database. They create each time we fetch data.
 //This is one of the ways to achieve fat model/thin controller.
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// Document Middleware: these middlewares are related to mongoose. Runs before .save() and .create()
+// There are pre and post middlewares.
+// IN Document Middlewares, 'this' keyword is pointing to the current document.
+tourSchema.pre('save', function () {
+  this.slug = slugify(this.name, { lower: true });
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
