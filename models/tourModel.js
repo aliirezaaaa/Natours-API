@@ -56,6 +56,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now,
     },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -74,6 +78,13 @@ tourSchema.virtual('durationWeeks').get(function () {
 // IN Document Middlewares, 'this' keyword is pointing to the current document.
 tourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
+});
+
+// Query middleware. 'this' keyword points to the query.
+// we could use 'find' instead of /^find/. But in that way it would only works for find queries.
+// not for findOne. Now by using regular expressions, it works for everything starts with find.
+tourSchema.pre(/^find/, function () {
+  this.find({ secretTour: { $ne: true } });
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
