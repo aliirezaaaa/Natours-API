@@ -13,6 +13,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
+    role: req.body.role,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
@@ -87,3 +88,15 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// As we can't pass arguments to middleware function,
+// we create a wrapper function which will then return the middleware function that we want.
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      return next(
+        new AppError('You do not have permission to perform this action!', 403),
+      );
+    next();
+  };
+};
