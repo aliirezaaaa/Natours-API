@@ -56,6 +56,13 @@ userSchema.pre('save', async function () {
   this.passwordConfirm = undefined;
 });
 
+userSchema.pre('save', function () {
+  if (!this.isModified('password') || this.isNew) return;
+
+  // we subtract 1000 ms because sometimes saving to database is slower than issuing JWT
+  this.passwordChangedAt = Date.now() - 1000;
+});
+
 // instance method. this will be available on all documents of certain collection
 userSchema.methods.correctPassword = async function (
   candidatePassword,
