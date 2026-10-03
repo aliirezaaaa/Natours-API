@@ -36,6 +36,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// we will not actually delete the user from the database. we just set activate property to false.
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
 
