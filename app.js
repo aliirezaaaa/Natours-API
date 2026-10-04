@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 const userRouter = require('./routes/userRoutes');
 const toureRouter = require('./routes/tourRoutes');
 const AppError = require('./utils/appError');
@@ -37,6 +38,21 @@ app.use(mongoSanitize());
 
 // Data sanitizatoin against XSS (cross site script)
 app.use(xss());
+
+// Prevent parameter pollution
+app.use(
+  hpp({
+    // an array of properties which we allow duplicates in the query string
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // Test middleware
 app.use((req, res, next) => {
