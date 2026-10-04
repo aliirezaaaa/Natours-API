@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const userRouter = require('./routes/userRoutes');
 const toureRouter = require('./routes/tourRoutes');
 const AppError = require('./utils/appError');
@@ -7,7 +8,20 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
-app.use(morgan('dev'));
+// Global Middlewares
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Help preventing denial of service (DOS) and brute-force attacks,
+// By limiting requests from each ip
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP. Please try again in an hour!',
+});
+app.use('/api', limiter);
+
 app.use(express.json());
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
