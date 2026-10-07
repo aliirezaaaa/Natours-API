@@ -38,6 +38,12 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 exports.getTourById = catchAsync(async (req, res, next) => {
+  // // we use populate() in query, not in the database, to have actual data and not just id's
+  // // As we want to use it on other api, for example getAllTours, we put it on query middlware
+  // const tour = await Tour.findById(req.params.id).populate({
+  //   path: 'guides',
+  //   select: '-__v',
+  // });
   const tour = await Tour.findById(req.params.id);
 
   if (!tour) {
@@ -79,11 +85,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndDelete(req.params.id);
-  
+
   if (!tour) {
     return next(new AppError('No tour found with this ID.', 404));
   }
-  
+
   res.status(204).json({
     status: 'success',
     data: null,

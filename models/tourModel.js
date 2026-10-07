@@ -141,6 +141,13 @@ tourSchema.pre(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
 });
 
+tourSchema.pre(/^find/, function () {
+  this.populate({
+    path: 'guides',
+    select: '-__v',
+  });
+});
+
 // Aggregation Middleware. here 'this' keyword points to current aggregation object.
 tourSchema.pre('aggregate', function () {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
