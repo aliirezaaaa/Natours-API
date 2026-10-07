@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -99,6 +100,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
   },
   {
     toJSON: { virtuals: true },
@@ -117,6 +119,12 @@ tourSchema.virtual('durationWeeks').get(function () {
 // IN Document Middlewares, 'this' keyword is pointing to the current document.
 tourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
+});
+
+// This function just work for save(create) and not for update
+tourSchema.pre('save', async function () {
+  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
 });
 
 // Query middleware. 'this' keyword points to the query.
