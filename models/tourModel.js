@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+// const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -87,6 +87,7 @@ const tourSchema = new mongoose.Schema(
       address: String,
       description: String,
     },
+    // Sub document
     locations: [
       {
         type: {
@@ -100,7 +101,12 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -121,11 +127,12 @@ tourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
 });
 
-// This function just work for save(create) and not for update
-tourSchema.pre('save', async function () {
-  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
-});
+// // Modelling tour guides Embedding
+// // This function just work for save(create) and not for update
+// tourSchema.pre('save', async function () {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+// });
 
 // Query middleware. 'this' keyword points to the query.
 // we could use 'find' instead of /^find/. But in that way it would only works for find queries.
