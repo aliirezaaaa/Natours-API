@@ -16,6 +16,12 @@ router.patch(
   authController.updatePassword,
 );
 
+router.get(
+  '/me',
+  authController.protect,
+  userController.getMe,
+  userController.getUserById,
+);
 router.patch('/updateMe', authController.protect, userController.updateMe);
 // As long as the user is not accessible anywhere, it is ok to use this http method(delete).
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
