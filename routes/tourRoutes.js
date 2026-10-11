@@ -1,9 +1,14 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
-const reviewController = require('../controllers/reviewController');
+// const reviewController = require('../controllers/reviewController');
+const reviewRoutes = require('../routes/reviewRoutes');
 
 const router = express.Router();
+
+// router itself is just a middleware, we use 'use' method on it and want it to use reviewRoutes insted,
+// for /:tourId/reviews route
+router.use('/:tourId/reviews', reviewRoutes);
 
 router
   .route('/top-5-cheap')
@@ -27,13 +32,13 @@ router
     tourController.deleteTour,
   );
 
-// Nested Routes
-router
-  .route('/:tourId/reviews')
-  .post(
-    authController.protect,
-    authController.restrictTo('user'),
-    reviewController.createReview,
-  );
+// // Nested Routes
+// router
+//   .route('/:tourId/reviews')
+//   .post(
+//     authController.protect,
+//     authController.restrictTo('user'),
+//     reviewController.createReview,
+//   );
 
 module.exports = router;

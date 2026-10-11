@@ -2,7 +2,8 @@ const express = require('express');
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
 
-const router = express.Router();
+// we use mergeParams: true to let this router have access to parameter from other router
+const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
