@@ -120,6 +120,16 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate
+// Inorder to have access to reviews from tours, we could have use child reference but in that case it
+// could be a huge list of review ids on tour collection and this is not good practice. So we use
+// virtual populate, think of it like list of ids but it's not persist on database.
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // Document Middleware: these middlewares are related to mongoose. Runs before .save() and .create()
 // There are pre and post middlewares.
 // IN Document Middlewares, 'this' keyword is pointing to the current document.
