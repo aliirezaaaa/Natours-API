@@ -6,25 +6,19 @@ const router = express.Router();
 
 router.post('/signup', authController.signUp);
 router.post('/login', authController.login);
-
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
-router.patch(
-  '/updatePassword',
-  authController.protect,
-  authController.updatePassword,
-);
+// By this code we protect(middleware) all the routes that will come after this point
+// So we don't need to use authController.protect for each of them
+router.use(authController.protect);
 
-router.get(
-  '/me',
-  authController.protect,
-  userController.getMe,
-  userController.getUserById,
-);
-router.patch('/updateMe', authController.protect, userController.updateMe);
-// As long as the user is not accessible anywhere, it is ok to use this http method(delete).
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.patch('/updatePassword', authController.updatePassword);
+router.get('/me', userController.getMe, userController.getUserById);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
