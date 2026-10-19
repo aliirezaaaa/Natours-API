@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -40,6 +41,51 @@ reviewSchema.pre(/^find/, function () {
     path: 'user',
     select: 'name photo',
   });
+});
+
+// In static methods, 'this' points to the current model(not document)
+reviewSchema.statics.calcAverageRatings = async function (tourID) {
+  const stats = await this.aggregate([
+    {
+      $match: { tour: tourID },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourID, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourID, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+reviewSchema.post('save', function () {
+  // 'this' points to the current review
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+// findByIdAndUpdate
+// findByIdAndDelete
+reviewSchema.pre(/^findOneAnd/, async function () {
+  // this.r = await this.findOne();
+  // we use this to pass data from pre middleware to post middleware
+  this.r = await this.model.findOne(this.getQuery());
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // await this.findOne() does not work here, query has already executed
+  await this.r.constructor.calcAverageRatings(this.r.tour._id);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
