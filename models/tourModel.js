@@ -116,6 +116,7 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 //virtual properties does not save into database. They create each time we fetch data.
 //This is one of the ways to achieve fat model/thin controller.
